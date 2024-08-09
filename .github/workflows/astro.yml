@@ -54,6 +54,12 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
+      - name: Debug
+        run: |
+          echo "BUILD_PATH: ${{ env.BUILD_PATH }}"
+          echo "Package manager: ${{ steps.detect-package-manager.outputs.manager }}"
+          echo "Lockfile: ${{ steps.detect-package-manager.outputs.lockfile }}"
+          ls -la ${{ env.BUILD_PATH }}
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
