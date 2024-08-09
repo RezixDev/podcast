@@ -70,8 +70,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
-          cache-dependency-path: ${{ steps.detect-package-manager.outputs.lockfile }}
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:  
@@ -89,6 +87,9 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ${{ env.BUILD_PATH }}
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -97,9 +98,9 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build with Astro
         run: |
-          ${{ steps.detect-package-manager.outputs.runner }} astro build \
-            --site "${{ steps.pages.outputs.origin }}" \
-            --base "${{ steps.pages.outputs.base_path }}"
+            pnpm run build \
+              --site "${{ steps.pages.outputs.origin }}" \
+              --base "${{ steps.pages.outputs.base_path }}"
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
