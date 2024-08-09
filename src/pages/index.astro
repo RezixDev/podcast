@@ -1,0 +1,290 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import Layout from '../layouts/Layout.astro';
+import videosData from '../data/videos.json';
+
+interface Episode {
+  id: number;
+  seasonNumber: number;
+  name: string;
+  date: string;
+  youtubeId: string;
+}
+
+function customSort(a: Episode, b: Episode): number {
+  if (a.seasonNumber === 2 && b.seasonNumber === 2) {
+    return b.id - a.id;
+  }
+  if (a.seasonNumber === 2) return -1;
+  if (b.seasonNumber === 2) return 1;
+  if (a.seasonNumber !== b.seasonNumber) return b.seasonNumber - a.seasonNumber;
+  return a.id - b.id;
+}
+
+const allEpisodes = videosData.seasons
+  .flatMap(season => season.episodes.map(episode => ({...episode, seasonNumber: season.number})))
+  .sort(customSort);
+---
+
+<Layout title="Podcast Folgen">
+  <ViewTransitions />
+
+  <main class="relative overflow-hidden">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+      <header class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-white">Podcast Folgen</h1>
+        <button id="sortButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Sortieren
+        </button>
+      </header>
+
+      <div class="space-y-12" id="episode-list">
+        {allEpisodes.map((episode) => (
+          <div class="episode-card relative" data-episode-id={episode.id} data-season={episode.seasonNumber}>
+            <button class="back-button bg-white text-black font-bold py-2 px-4 rounded-full shadow-md mb-2">
+              Back
+            </button>
+            <div class="bg-black rounded-3xl overflow-hidden shadow-lg p-6 space-y-4 video-container" data-youtube-id={episode.youtubeId.split('?')[0]}>
+              <div class="episode-info">
+                <div class="episode-meta" transition:name={`episode-meta-${episode.id}`}>
+                  <h3 class="text-white font-bold text-sm">{episode.name}</h3>
+                  <p class="text-gray-400 text-xs">{episode.date}</p>
+                </div>
+
+                <h2 class="episode-title text-white text-2xl font-bold" transition:name={`episode-title-${episode.id}`}>Episode {episode.id}</h2>
+
+                <div class="flex items-center space-x-2 text-gray-400 text-sm season-info" transition:name={`season-info-${episode.id}`}>
+                  <span>Season {episode.seasonNumber}</span>
+                </div>
+              </div>
+
+              <div class="video-wrapper relative pt-[56.25%]">
+                <img
+                  src={`https://img.youtube.com/vi/${episode.youtubeId.split('?')[0]}/maxresdefault.jpg`}
+                  alt={episode.name}
+                  class="absolute top-0 left-0 w-full h-full object-cover rounded-lg thumbnail"
+                />
+                <button class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 play-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    overflow-x: hidden;
+  }
+
+  .episode-card {
+    transition: all 0.5s ease-in-out;
+  }
+
+  .video-container {
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .video-wrapper {
+    transition: all 0.5s ease-in-out;
+  }
+
+  .episode-card.expanded {
+    z-index: 10;
+  }
+
+  .episode-card.expanded .video-container {
+    transform: scale(1.1);
+    transform-origin: center center;
+  }
+
+  .episode-info {
+    transition: all 0.5s ease-in-out;
+  }
+
+  .episode-meta,
+  .episode-title,
+  .season-info {
+    transition: all 0.5s ease-in-out;
+  }
+
+  .episode-card.expanded .episode-info {
+    order: -1;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .episode-card.expanded .episode-meta,
+  .episode-card.expanded .episode-title,
+  .episode-card.expanded .season-info {
+    transform: scale(1.1);
+  }
+
+  .season-info {
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .episode-card.expanded .video-container {
+      transform: scale(1.2);
+    }
+
+    .episode-card.expanded .episode-meta,
+    .episode-card.expanded .episode-title,
+    .episode-card.expanded .season-info {
+      transform: scale(1.2);
+    }
+  }
+
+  .back-button {
+    display: none;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top: -2.5rem;
+    left: -1rem;
+    z-index: 20;
+  }
+
+  .episode-card.expanded .back-button {
+    display: block;
+    opacity: 1;
+  }
+</style>
+
+<script>
+  interface Episode {
+    id: number;
+    seasonNumber: number;
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const videoContainers = document.querySelectorAll('.video-container');
+    const sortButton = document.getElementById('sortButton');
+    const episodeList = document.getElementById('episode-list');
+    let isCustomSorted = true;
+
+    videoContainers.forEach(container => {
+      const playButton = container.querySelector('.play-button');
+      const youtubeId = container.getAttribute('data-youtube-id');
+      const episodeCard = container.closest('.episode-card');
+      const backButton = episodeCard?.querySelector('.back-button');
+
+      if (playButton && youtubeId && episodeCard) {
+        playButton.addEventListener('click', () => {
+          toggleVideoExpansion(container, episodeCard, youtubeId);
+        });
+      }
+
+      if (backButton && youtubeId && episodeCard) {
+        backButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleVideoExpansion(container, episodeCard, youtubeId);
+        });
+      }
+    });
+
+    function toggleVideoExpansion(container: Element, episodeCard: Element, youtubeId: string) {
+      const isExpanded = episodeCard.classList.contains('expanded');
+      const videoWrapper = container.querySelector('.video-wrapper');
+
+      if ('startViewTransition' in document) {
+        (document as any).startViewTransition(() => {
+          updateVideoContent(isExpanded, videoWrapper, youtubeId, container, episodeCard);
+        });
+      } else {
+        updateVideoContent(isExpanded, videoWrapper, youtubeId, container, episodeCard);
+      }
+    }
+
+    function updateVideoContent(isExpanded: boolean, videoWrapper: Element | null, youtubeId: string, container: Element, episodeCard: Element) {
+    if (!videoWrapper) return;
+
+    if (!isExpanded) {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1`;
+      iframe.allowFullscreen = true;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      Object.assign(iframe.style, {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        border: 'none'
+      });
+
+      videoWrapper.innerHTML = '';
+      videoWrapper.appendChild(iframe);
+    } else {
+        videoWrapper.innerHTML = `
+          <img
+            src="https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg"
+            alt="Video Thumbnail"
+            class="absolute top-0 left-0 w-full h-full object-cover rounded-lg thumbnail"
+          />
+          <button class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 play-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            </svg>
+          </button>
+        `;
+        const newPlayButton = videoWrapper.querySelector('.play-button');
+        if (newPlayButton) {
+          newPlayButton.addEventListener('click', () => toggleVideoExpansion(container, episodeCard, youtubeId));
+        }
+      }
+
+      episodeCard.classList.toggle('expanded');
+      container.classList.toggle('expanded');
+
+      if (!isExpanded) {
+      // Adjust scrolling behavior
+      setTimeout(() => {
+        const rect = episodeCard.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetPosition = rect.top + scrollTop - 100; // 100px from the top of the viewport
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }, 0);
+    }
+    }
+
+    if (sortButton && episodeList) {
+      sortButton.addEventListener('click', () => {
+        const episodes = Array.from(episodeList.children) as HTMLElement[];
+        episodes.sort((a, b) => {
+          const aSeason = parseInt(a.dataset.season || '0');
+          const bSeason = parseInt(b.dataset.season || '0');
+          const aEpisode = parseInt(a.dataset.episodeId || '0');
+          const bEpisode = parseInt(b.dataset.episodeId || '0');
+
+          if (isCustomSorted) {
+            if (aSeason !== bSeason) return aSeason - bSeason;
+            return aEpisode - bEpisode;
+          } else {
+            if (aSeason === 2 && bSeason === 2) return bEpisode - aEpisode;
+            if (aSeason === 2) return -1;
+            if (bSeason === 2) return 1;
+            if (aSeason !== bSeason) return bSeason - aSeason;
+            return aEpisode - bEpisode;
+          }
+        });
+
+        episodes.forEach(episode => episodeList.appendChild(episode));
+        isCustomSorted = !isCustomSorted;
+        sortButton.textContent = isCustomSorted ? "Chronologisch" : "Individuell";
+      });
+    }
+  });
+</script>

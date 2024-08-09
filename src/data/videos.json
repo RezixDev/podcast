@@ -1,0 +1,91 @@
+{
+  "seasons": [
+    {
+      "number": 2,
+      "episodes": [
+        {
+          "id": 1,
+          "title": "Season 2 Episode 1",
+          "youtubeId": "NMoza8_vTho?si=jcJJiC55P3dz31ed",
+          "name": "CUT SPENCER",
+          "date": "Juli 2024"
+        },
+        {
+          "id": 2,
+          "title": "Season 2 Episode 2",
+          "youtubeId": "dCZxn9Eg9Do?si=AuyPqLI9wI4aXS5s",
+          "name": "ÄTZEL",
+          "date": "Juli 2024"
+        }
+      ]
+    },
+    {
+      "number": 1,
+      "episodes": [
+        {
+          "id": 1,
+          "title": "Season 1 Episode 1",
+          "youtubeId": "bPa1hS8lnL8?si=Nc6eSEpALAf-1GzM",
+          "name": "JOSHKA106",
+          "date": "Januar 2024"
+        },
+        {
+          "id": 2,
+          "title": "Season 1 Episode 2",
+          "youtubeId": "SirkOeMRXKQ?si=RZPXjxO4dHJmLaKF",
+          "name": "BRONSON XL",
+          "date": "Februar 2024"
+        },
+        {
+          "id": 3,
+          "title": "Season 1 Episode 3",
+          "youtubeId": "r2Mv3ewNMpA?si=0Cdnq1eRTz8b-GLw",
+          "name": "BRYON CHANEY",
+          "date": "Februar 20243"
+        },
+        {
+          "id": 4,
+          "title": "Season 1 Episode 4",
+          "youtubeId": "iI8UKwf9kx4?si=CY429SXBAa5ye5-N",
+          "name": "OJAYBEATZ",
+          "date": "März 2024"
+        },
+        {
+          "id": 5,
+          "title": "Season 1 Episode 5",
+          "youtubeId": "POxX7BkmsEc?si=cJu6vo46uv40iqKR",
+          "name": "DJ Rocwilda",
+          "date": "März 2024"
+        },
+        {
+          "id": 6,
+          "title": "Season 1 Episode 6",
+          "youtubeId": "vYzGuCkOJ44?si=r6lLB7SrUPXEkMwy",
+          "name": "MORGAN FREEMAN",
+          "date": "April 2024"
+        },
+        {
+          "id": 7,
+          "title": "Season 1 Episode 7",
+          "youtubeId": "3Tb1QgELD8Q?si=dwW5WBWsj2BYpR3I",
+          "name": "NOH",
+          "date": "April 2024"
+        },
+        {
+          "id": 8,
+          "title": "Season 1 Episode 8",
+          "youtubeId": "HqhRiacXPPE?si=-mrU3tQqQQRqSAuT",
+          "name": "Tand Studios",
+          "date": "Mai 2024"
+        },
+        {
+          "id": 9,
+          "title": "Season 1 Episode 9",
+          "youtubeId": "i-GVt6yhZmY?si=BrXL_eVclyI5rOgk",
+          "name": "Yousra (Bewusstseinscoach)",
+          "date": "Mai 2024"
+        }
+      ]
+    }
+  ]
+}
