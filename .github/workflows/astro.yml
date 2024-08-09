@@ -59,7 +59,7 @@ jobs:
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-          cache-dependency-path: ${{ env.BUILD_PATH }}/${{ steps.detect-package-manager.outputs.lockfile }}
+          cache-dependency-path: ${{ steps.detect-package-manager.outputs.lockfile }}
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -76,6 +76,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
+      - name: Debug
+        run: |
+              echo "BUILD_PATH: ${{ env.BUILD_PATH }}"
+              echo "Package manager: ${{ steps.detect-package-manager.outputs.manager }}"
+              echo "Lockfile: ${{ steps.detect-package-manager.outputs.lockfile }}"
+              ls -la ${{ env.BUILD_PATH }}
 
   deploy:
     environment:
